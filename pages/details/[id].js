@@ -9,6 +9,8 @@ export default function DetailsPage() {
   const { id, type } = router.query;
   const [data, setData] = useState(null);
   const [seasons, setSeasons] = useState([]);
+  const [episodes, setEpisodes] = useState([]);
+  const [selectedSeason, setSelectedSeason] = useState(null);
   const API_KEY = '9597713c8465b4d0e1eafdcf8db693a2';
 
   useEffect(() => {
@@ -34,11 +36,27 @@ export default function DetailsPage() {
     fetchDetails();
   }, [router.isReady, id, type]);
 
+  const fetchEpisodes = async (seasonNumber) => {
+    try {
+      const res = await fetch(`https://api.themoviedb.org/3/tv/${id}/season/${seasonNumber}?api_key=${API_KEY}&language=ar`);
+      const result = await res.json();
+      setEpisodes(result.episodes || []);
+      setSelectedSeason(seasonNumber);
+    } catch (err) {
+      console.error("فشل في جلب الحلقات:", err);
+    }
+  };
+
   if (!data) {
     return <div style={{ color: 'white', textAlign: 'center', paddingTop: '2rem' }}>جارٍ تحميل المعلومات...</div>;
   }
 
-  const vidsrcUrl = `https://vidsrc.to/embed/${type === 'tv' ? 'tv' : 'movie'}/${id}`;
+  const vidsrcUrl = (season, episode) => {
+    if (type === 'tv') {
+      return `https://vidsrc.to/embed/tv/${id}/${season}/${episode}`;
+    }
+    return `https://vidsrc.to/embed/movie/${id}`;
+  };
 
   return (
     <div
@@ -94,7 +112,11 @@ export default function DetailsPage() {
             <h3 style={{ marginBottom: '1rem' }}>المواسم ({seasons.length})</h3>
             <ul style={{ padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
               {seasons.map((season) => (
-                <li key={season.id} style={{ backgroundColor: '#222', padding: '0.5rem 1rem', borderRadius: '8px' }}>
+                <li
+                  key={season.id}
+                  style={{ backgroundColor: '#222', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer' }}
+                  onClick={() => fetchEpisodes(season.season_number)}
+                >
                   📺 {season.name} — {season.episode_count} حلقات
                 </li>
               ))}
@@ -102,22 +124,51 @@ export default function DetailsPage() {
           </div>
         )}
 
-        <a href={vidsrcUrl} target="_blank" rel="noopener noreferrer">
-          <button
-            style={{
-              marginTop: '2rem',
-              backgroundColor: '#ff1744',
-              color: 'white',
-              padding: '0.8rem 2rem',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '1rem',
-              cursor: 'pointer'
-            }}
-          >
-            ▶ مشاهدة الآن
-          </button>
-        </a>
+        {selectedSeason && episodes.length > 0 && (
+          <div style={{ marginTop: '2rem' }}>
+            <h3>اختر حلقة للمشاهدة:</h3>
+            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '1rem' }}>
+              {episodes.map((ep) => (
+                <li key={ep.id}>
+                  <a
+                    href={vidsrcUrl(selectedSeason, ep.episode_number)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      backgroundColor: '#333',
+                      padding: '0.4rem 0.8rem',
+                      borderRadius: '6px',
+                      color: '#fff',
+                      textDecoration: 'none',
+                      fontSize: '14px'
+                    }}
+                  >
+                    ▶ {ep.episode_number}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {type === 'movie' && (
+          <a href={vidsrcUrl()} target="_blank" rel="noopener noreferrer">
+            <button
+              style={{
+                marginTop: '2rem',
+                backgroundColor: '#ff1744',
+                color: 'white',
+                padding: '0.8rem 2rem',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                cursor: 'pointer'
+              }}
+            >
+              ▶ مشاهدة الآن
+            </button>
+          </a>
+        )}
       </div>
     </div>
   );
