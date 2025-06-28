@@ -11,16 +11,24 @@ export default function DetailsPage() {
   const API_KEY = '9597713c8465b4d0e1eafdcf8db693a2';
 
   useEffect(() => {
-    if (!id || !type) return;
+    if (!router.isReady || !id || !type) return;
 
     const fetchDetails = async () => {
-      const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=ar`);
-      const result = await res.json();
-      setData(result);
+      try {
+        const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=ar`);
+        const result = await res.json();
+        if (result.success === false) {
+          console.error("TMDB Error:", result.status_message);
+          return;
+        }
+        setData(result);
+      } catch (err) {
+        console.error("فشل في جلب البيانات:", err);
+      }
     };
 
     fetchDetails();
-  }, [id, type]);
+  }, [router.isReady, id, type]);
 
   if (!data) {
     return <div style={{ color: 'white', textAlign: 'center', paddingTop: '2rem' }}>جارٍ تحميل المعلومات...</div>;
@@ -29,44 +37,66 @@ export default function DetailsPage() {
   return (
     <div
       style={{
-        backgroundImage: `url(https://image.tmdb.org/t/p/original${data.backdrop_path})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundColor: '#000',
         color: '#fff',
         minHeight: '100vh',
-        padding: '2rem',
-        backdropFilter: 'blur(5px)'
+        padding: '1rem',
+        fontFamily: 'sans-serif'
       }}
     >
       <Link href="/">
-        <button style={{ marginBottom: '2rem', backgroundColor: '#111', color: '#fff', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer' }}>
+        <button style={{ marginBottom: '1rem', backgroundColor: '#111', color: '#fff', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer' }}>
           ← رجوع
         </button>
       </Link>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', alignItems: 'flex-start' }}>
-        <img
-          src={`https://image.tmdb.org/t/p/w500${data.poster_path}`}
-          alt={data.title || data.name}
-          style={{ width: '200px', borderRadius: '10px' }}
-        />
-        <div style={{ maxWidth: '600px' }}>
-          <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>{data.title || data.name}</h1>
-          <p style={{ marginBottom: '1rem' }}>
-            🗓️ {data.first_air_date || data.release_date} &nbsp;&nbsp; ⭐ {data.vote_average}
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
-            {data.genres && data.genres.map((genre) => (
-              <span key={genre.id} style={{ backgroundColor: '#ff1744', padding: '0.3rem 0.6rem', borderRadius: '5px', fontSize: '14px' }}>
-                {genre.name}
-              </span>
-            ))}
-          </div>
-          <p style={{ lineHeight: '1.6', marginBottom: '1.5rem' }}>{data.overview}</p>
 
-          <button style={{ backgroundColor: '#ff1744', color: 'white', padding: '0.5rem 1rem', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
-            ▶ مشاهدة الآن
-          </button>
+      <div style={{
+        backgroundImage: `url(https://image.tmdb.org/t/p/original${data.backdrop_path})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        padding: '2rem',
+        borderRadius: '12px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <img
+          src={`https://image.tmdb.org/t/p/w300${data.poster_path}`}
+          alt={data.title || data.name}
+          style={{ borderRadius: '15px', marginBottom: '1rem', boxShadow: '0 0 20px rgba(0,0,0,0.7)' }}
+        />
+        <h1 style={{ fontSize: '2rem', textAlign: 'center', marginBottom: '0.5rem' }}>{data.title || data.name}</h1>
+        <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>
+          🗓️ {data.first_air_date || data.release_date} | ⭐ {data.vote_average}
         </div>
+        <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+          {data.genres && data.genres.map((genre) => (
+            <span key={genre.id} style={{ backgroundColor: '#ff1744', padding: '0.3rem 0.6rem', borderRadius: '5px', fontSize: '13px' }}>
+              {genre.name}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ marginTop: '2rem', backgroundColor: '#111', padding: '1.5rem', borderRadius: '12px' }}>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>القصة</h2>
+        <p style={{ lineHeight: '1.7', fontSize: '15px', color: '#ccc' }}>{data.overview}</p>
+
+        <button
+          style={{
+            marginTop: '2rem',
+            backgroundColor: '#ff1744',
+            color: 'white',
+            padding: '0.8rem 2rem',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '1rem',
+            cursor: 'pointer'
+          }}
+        >
+          ▶ مشاهدة الآن
+        </button>
       </div>
     </div>
   );
