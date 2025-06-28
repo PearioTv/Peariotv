@@ -34,6 +34,8 @@ export default function DetailsPage() {
     return <div style={{ color: 'white', textAlign: 'center', paddingTop: '2rem' }}>جارٍ تحميل المعلومات...</div>;
   }
 
+  const vidsrcUrl = `https://vidsrc.to/embed/${type === 'tv' ? 'tv' : 'movie'}/${id}`;
+
   return (
     <div
       style={{
@@ -83,20 +85,22 @@ export default function DetailsPage() {
         <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>القصة</h2>
         <p style={{ lineHeight: '1.7', fontSize: '15px', color: '#ccc' }}>{data.overview}</p>
 
-        <button
-          style={{
-            marginTop: '2rem',
-            backgroundColor: '#ff1744',
-            color: 'white',
-            padding: '0.8rem 2rem',
-            border: 'none',
-            borderRadius: '8px',
-            fontSize: '1rem',
-            cursor: 'pointer'
-          }}
-        >
-          ▶ مشاهدة الآن
-        </button>
+        <a href={vidsrcUrl} target="_blank" rel="noopener noreferrer">
+          <button
+            style={{
+              marginTop: '2rem',
+              backgroundColor: '#ff1744',
+              color: 'white',
+              padding: '0.8rem 2rem',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '1rem',
+              cursor: 'pointer'
+            }}
+          >
+            ▶ مشاهدة الآن
+          </button>
+        </a>
       </div>
     </div>
   );
