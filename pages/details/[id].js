@@ -14,15 +14,21 @@ export default function DetailsPage() {
 
   useEffect(() => {
     if (!id || !type) return;
-    const API_KEY = '9597713c8465b4d0e1eafdcf8db693a2';
 
     const fetchDetails = async () => {
-      const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=ar`);
-      const data = await res.json();
-      setDetails(data);
+      try {
+        const API_KEY = '9597713c8465b4d0e1eafdcf8db693a2';
+        const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=ar`);
+        if (!res.ok) throw new Error('فشل في تحميل التفاصيل');
+        const data = await res.json();
+        setDetails(data);
 
-      if (type === 'tv') {
-        setSeasons(data.seasons || []);
+        if (type === 'tv') {
+          setSeasons(data.seasons || []);
+        }
+      } catch (error) {
+        console.error('خطأ في تحميل المعلومات:', error);
+        setDetails(null);
       }
     };
 
@@ -31,10 +37,16 @@ export default function DetailsPage() {
 
   const loadEpisodes = async (seasonNumber) => {
     setSelectedSeason(seasonNumber);
-    const API_KEY = '9597713c8465b4d0e1eafdcf8db693a2';
-    const res = await fetch(`https://api.themoviedb.org/3/tv/${id}/season/${seasonNumber}?api_key=${API_KEY}&language=ar`);
-    const data = await res.json();
-    setEpisodes(data.episodes || []);
+    try {
+      const API_KEY = '9597713c8465b4d0e1eafdcf8db693a2';
+      const res = await fetch(`https://api.themoviedb.org/3/tv/${id}/season/${seasonNumber}?api_key=${API_KEY}&language=ar`);
+      if (!res.ok) throw new Error('فشل في تحميل الحلقات');
+      const data = await res.json();
+      setEpisodes(data.episodes || []);
+    } catch (err) {
+      console.error('خطأ في تحميل الحلقات:', err);
+      setEpisodes([]);
+    }
   };
 
   const handlePlay = (episodeNumber = null) => {
@@ -129,7 +141,7 @@ export default function DetailsPage() {
           )}
         </>
       ) : (
-        <p>جارٍ تحميل المعلومات...</p>
+        <p>❌ لم يتم العثور على معلومات هذا العنوان أو يوجد خطأ في الاتصال بالـ API.</p>
       )}
 
       {iframeSrc && (
