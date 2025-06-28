@@ -105,10 +105,6 @@ export default function Home() {
     zIndex: 9998
   };
 
-  const handleClickPlay = (id, type) => {
-    setIframeSrc(`https://vidsrc.to/embed/${type}/${id}`);
-  };
-
   return (
     <div style={{ backgroundColor: '#0d0d0d', color: '#fff', minHeight: '100vh', padding: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginBottom: '2rem' }}>
@@ -128,10 +124,12 @@ export default function Home() {
         <h2 style={{ color: '#00ffc3', marginBottom: '1rem' }}>📺 المسلسلات الشائعة</h2>
         <div style={gridStyle}>
           {shows.map(show => (
-            <div key={show.id} style={cardStyle} onClick={() => handleClickPlay(show.id, 'tv')}>
-              <img src={`https://image.tmdb.org/t/p/w500${show.poster_path}`} alt={show.name} style={imageStyle} />
-              <div style={titleStyle}>{show.name}</div>
-            </div>
+            <Link key={show.id} href={`/details/${show.id}?type=tv`} style={{ textDecoration: 'none' }}>
+              <div style={cardStyle}>
+                <img src={`https://image.tmdb.org/t/p/w500${show.poster_path}`} alt={show.name} style={imageStyle} />
+                <div style={titleStyle}>{show.name}</div>
+              </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -140,10 +138,12 @@ export default function Home() {
         <h2 style={{ color: '#00ffc3', marginBottom: '1rem' }}>🎬 الأفلام الشائعة</h2>
         <div style={gridStyle}>
           {movies.map(movie => (
-            <div key={movie.id} style={cardStyle} onClick={() => handleClickPlay(movie.id, 'movie')}>
-              <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} style={imageStyle} />
-              <div style={titleStyle}>{movie.title}</div>
-            </div>
+            <Link key={movie.id} href={`/details/${movie.id}?type=movie`} style={{ textDecoration: 'none' }}>
+              <div style={cardStyle}>
+                <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} style={imageStyle} />
+                <div style={titleStyle}>{movie.title}</div>
+              </div>
+            </Link>
           ))}
         </div>
       </div>
