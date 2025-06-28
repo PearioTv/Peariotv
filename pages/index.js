@@ -1,67 +1,88 @@
-// pages/details/[id].js
+// pages/index.js
 
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-export default function DetailsPage() {
-  const router = useRouter();
-  const { id, type } = router.query;
-  const [data, setData] = useState(null);
-  const API_KEY = '9597713c8465b4d0e1eafdcf8db693a2';
+export default function Home() {
+  const [shows, setShows] = useState([]);
+  const [movies, setMovies] = useState([]);
 
   useEffect(() => {
-    if (!id || !type) return;
+    const API_KEY = '9597713c8465b4d0e1eafdcf8db693a2';
+    const fetchData = async () => {
+      try {
+        const showsRes = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${API_KEY}&language=ar`);
+        const showsData = await showsRes.json();
+        setShows(showsData.results.slice(0, 10));
 
-    const fetchDetails = async () => {
-      const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=ar`);
-      const result = await res.json();
-      setData(result);
+        const moviesRes = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=ar`);
+        const moviesData = await moviesRes.json();
+        setMovies(moviesData.results.slice(0, 10));
+      } catch (error) {
+        console.error('حدث خطأ أثناء تحميل البيانات:', error);
+      }
     };
 
-    fetchDetails();
-  }, [id, type]);
+    fetchData();
+  }, []);
 
-  if (!data) {
-    return <div style={{ color: 'white', textAlign: 'center', paddingTop: '2rem' }}>جارٍ تحميل المعلومات...</div>;
-  }
+  const sectionStyle = {
+    marginBottom: '3rem'
+  };
+
+  const gridStyle = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+    gap: '1rem'
+  };
+
+  const cardStyle = {
+    backgroundColor: '#1c1c1c',
+    borderRadius: '10px',
+    overflow: 'hidden',
+    textAlign: 'center',
+    boxShadow: '0 0 10px rgba(0,0,0,0.3)'
+  };
+
+  const imageStyle = {
+    width: '100%',
+    height: '220px',
+    objectFit: 'cover'
+  };
+
+  const titleStyle = {
+    padding: '0.5rem',
+    color: '#fff',
+    fontSize: '14px'
+  };
 
   return (
-    <div
-      style={{
-        backgroundImage: `url(https://image.tmdb.org/t/p/original${data.backdrop_path})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        color: '#fff',
-        minHeight: '100vh',
-        padding: '2rem',
-        backdropFilter: 'blur(5px)'
-      }}
-    >
-      <Link href="/">
-        <button style={{ marginBottom: '2rem', backgroundColor: '#111', color: '#fff', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer' }}>
-          ← رجوع
-        </button>
-      </Link>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', alignItems: 'flex-start' }}>
-        <img
-          src={`https://image.tmdb.org/t/p/w500${data.poster_path}`}
-          alt={data.title || data.name}
-          style={{ width: '200px', borderRadius: '10px' }}
-        />
-        <div style={{ maxWidth: '600px' }}>
-          <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>{data.title || data.name}</h1>
-          <p style={{ marginBottom: '1rem' }}>
-            🗓️ {data.first_air_date || data.release_date} &nbsp;&nbsp; ⭐ {data.vote_average}
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
-            {data.genres && data.genres.map((genre) => (
-              <span key={genre.id} style={{ backgroundColor: '#ff1744', padding: '0.3rem 0.6rem', borderRadius: '5px', fontSize: '14px' }}>
-                {genre.name}
-              </span>
-            ))}
-          </div>
-          <p style={{ lineHeight: '1.6' }}>{data.overview}</p>
+    <div style={{ backgroundColor: '#0d0d0d', color: '#fff', minHeight: '100vh', padding: '2rem' }}>
+      <div style={sectionStyle}>
+        <h2 style={{ color: '#00ffc3', marginBottom: '1rem' }}>📺 المسلسلات الشائعة</h2>
+        <div style={gridStyle}>
+          {shows.map(show => (
+            <Link key={show.id} href={`/details/${show.id}?type=tv`} style={{ textDecoration: 'none' }}>
+              <div style={cardStyle}>
+                <img src={`https://image.tmdb.org/t/p/w500${show.poster_path}`} alt={show.name} style={imageStyle} />
+                <div style={titleStyle}>{show.name}</div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      <div style={sectionStyle}>
+        <h2 style={{ color: '#00ffc3', marginBottom: '1rem' }}>🎬 الأفلام الشائعة</h2>
+        <div style={gridStyle}>
+          {movies.map(movie => (
+            <Link key={movie.id} href={`/details/${movie.id}?type=movie`} style={{ textDecoration: 'none' }}>
+              <div style={cardStyle}>
+                <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} style={imageStyle} />
+                <div style={titleStyle}>{movie.title}</div>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </div>
