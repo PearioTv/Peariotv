@@ -1,30 +1,8 @@
 // pages/index.js
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const [movies, setMovies] = useState([]);
-  const [shows, setShows] = useState([]);
-
-  useEffect(() => {
-    fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ar`)
-      .then(res => res.json())
-      .then(data => {
-        console.log('Movies:', data);
-        setMovies(data.results || []);
-      })
-      .catch(err => console.error('Movie fetch error:', err));
-
-    fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ar`)
-      .then(res => res.json())
-      .then(data => {
-        console.log('TV Shows:', data);
-        setShows(data.results || []);
-      })
-      .catch(err => console.error('TV fetch error:', err));
-  }, []);
-
   const sectionStyle = {
     marginBottom: '3rem'
   };
@@ -55,15 +33,25 @@ export default function Home() {
     fontSize: '14px'
   };
 
+  const sampleShows = [
+    { id: 1, name: 'لعبة الحبّار', poster: 'https://image.tmdb.org/t/p/w500/6f0Uokj58OGzgYjGobeJZDtTcUX.jpg' },
+    { id: 2, name: 'ذا بير', poster: 'https://image.tmdb.org/t/p/w500/eKfVzzEazSIjJMrw9ADa2x8ksLz.jpg' }
+  ];
+
+  const sampleMovies = [
+    { id: 3, title: 'The Ritual', poster: 'https://image.tmdb.org/t/p/w500/uubL8yvtEBjz3V7DFQHjCuSQO8w.jpg' },
+    { id: 4, title: 'ميغان ٢.٠', poster: 'https://image.tmdb.org/t/p/w500/rugqCpq8yBGWaQW6dMY2DVOEW7e.jpg' }
+  ];
+
   return (
     <div style={{ backgroundColor: '#0d0d0d', color: '#fff', minHeight: '100vh', padding: '2rem' }}>
       <div style={sectionStyle}>
         <h2 style={{ color: '#00ffc3', marginBottom: '1rem' }}>📺 المسلسلات الشائعة</h2>
         <div style={gridStyle}>
-          {shows.map(show => (
-            <Link key={show.id} href={`/info/tv?id=${show.id}`} style={{ textDecoration: 'none' }}>
+          {sampleShows.map(show => (
+            <Link key={show.id} href="#" style={{ textDecoration: 'none' }}>
               <div style={cardStyle}>
-                <img src={`https://image.tmdb.org/t/p/w500${show.poster_path}`} alt={show.name} style={imageStyle} />
+                <img src={show.poster} alt={show.name} style={imageStyle} />
                 <div style={titleStyle}>{show.name}</div>
               </div>
             </Link>
@@ -74,10 +62,10 @@ export default function Home() {
       <div style={sectionStyle}>
         <h2 style={{ color: '#00ffc3', marginBottom: '1rem' }}>🎬 الأفلام الشائعة</h2>
         <div style={gridStyle}>
-          {movies.map(movie => (
-            <Link key={movie.id} href={`/info/movie?id=${movie.id}`} style={{ textDecoration: 'none' }}>
+          {sampleMovies.map(movie => (
+            <Link key={movie.id} href="#" style={{ textDecoration: 'none' }}>
               <div style={cardStyle}>
-                <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} style={imageStyle} />
+                <img src={movie.poster} alt={movie.title} style={imageStyle} />
                 <div style={titleStyle}>{movie.title}</div>
               </div>
             </Link>
