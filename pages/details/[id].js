@@ -48,9 +48,25 @@ export default function DetailsPage() {
     }
   };
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
+
+    try {
+      const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&language=ar&query=${encodeURIComponent(searchQuery.trim())}`);
+      const result = await res.json();
+      if (result.results && result.results.length > 0) {
+        const first = result.results.find(item => item.media_type === 'tv' || item.media_type === 'movie');
+        if (first) {
+          router.push(`/details/${first.id}?type=${first.media_type}`);
+        } else {
+          alert("لم يتم العثور على نتيجة صالحة.");
+        }
+      } else {
+        alert("لا توجد نتائج.");
+      }
+    } catch (err) {
+      console.error("فشل في البحث:", err);
+      alert("حدث خطأ أثناء البحث.");
     }
   };
 
