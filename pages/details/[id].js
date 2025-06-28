@@ -8,6 +8,7 @@ export default function DetailsPage() {
   const router = useRouter();
   const { id, type } = router.query;
   const [data, setData] = useState(null);
+  const [seasons, setSeasons] = useState([]);
   const API_KEY = '9597713c8465b4d0e1eafdcf8db693a2';
 
   useEffect(() => {
@@ -22,6 +23,9 @@ export default function DetailsPage() {
           return;
         }
         setData(result);
+        if (type === 'tv') {
+          setSeasons(result.seasons || []);
+        }
       } catch (err) {
         console.error("فشل في جلب البيانات:", err);
       }
@@ -84,6 +88,19 @@ export default function DetailsPage() {
       <div style={{ marginTop: '2rem', backgroundColor: '#111', padding: '1.5rem', borderRadius: '12px' }}>
         <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>القصة</h2>
         <p style={{ lineHeight: '1.7', fontSize: '15px', color: '#ccc' }}>{data.overview}</p>
+
+        {type === 'tv' && seasons.length > 0 && (
+          <div style={{ marginTop: '2rem' }}>
+            <h3 style={{ marginBottom: '1rem' }}>المواسم ({seasons.length})</h3>
+            <ul style={{ padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              {seasons.map((season) => (
+                <li key={season.id} style={{ backgroundColor: '#222', padding: '0.5rem 1rem', borderRadius: '8px' }}>
+                  📺 {season.name} — {season.episode_count} حلقات
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <a href={vidsrcUrl} target="_blank" rel="noopener noreferrer">
           <button
