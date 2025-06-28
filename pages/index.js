@@ -8,6 +8,7 @@ export default function Home() {
   const [shows, setShows] = useState([]);
   const [movies, setMovies] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [iframeSrc, setIframeSrc] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -66,7 +67,8 @@ export default function Home() {
     borderRadius: '10px',
     overflow: 'hidden',
     textAlign: 'center',
-    boxShadow: '0 0 10px rgba(0,0,0,0.3)'
+    boxShadow: '0 0 10px rgba(0,0,0,0.3)',
+    cursor: 'pointer'
   };
 
   const imageStyle = {
@@ -79,6 +81,32 @@ export default function Home() {
     padding: '0.5rem',
     color: '#fff',
     fontSize: '14px'
+  };
+
+  const iframeStyle = {
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '90%',
+    height: '70vh',
+    backgroundColor: '#000',
+    border: 'none',
+    zIndex: 9999
+  };
+
+  const overlayStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    zIndex: 9998
+  };
+
+  const handleClickPlay = (id, type) => {
+    setIframeSrc(`https://vidsrc.to/embed/${type}/${id}`);
   };
 
   return (
@@ -100,12 +128,10 @@ export default function Home() {
         <h2 style={{ color: '#00ffc3', marginBottom: '1rem' }}>📺 المسلسلات الشائعة</h2>
         <div style={gridStyle}>
           {shows.map(show => (
-            <Link key={show.id} href={`/details/${show.id}?type=tv`} style={{ textDecoration: 'none' }}>
-              <div style={cardStyle}>
-                <img src={`https://image.tmdb.org/t/p/w500${show.poster_path}`} alt={show.name} style={imageStyle} />
-                <div style={titleStyle}>{show.name}</div>
-              </div>
-            </Link>
+            <div key={show.id} style={cardStyle} onClick={() => handleClickPlay(show.id, 'tv')}>
+              <img src={`https://image.tmdb.org/t/p/w500${show.poster_path}`} alt={show.name} style={imageStyle} />
+              <div style={titleStyle}>{show.name}</div>
+            </div>
           ))}
         </div>
       </div>
@@ -114,15 +140,20 @@ export default function Home() {
         <h2 style={{ color: '#00ffc3', marginBottom: '1rem' }}>🎬 الأفلام الشائعة</h2>
         <div style={gridStyle}>
           {movies.map(movie => (
-            <Link key={movie.id} href={`/details/${movie.id}?type=movie`} style={{ textDecoration: 'none' }}>
-              <div style={cardStyle}>
-                <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} style={imageStyle} />
-                <div style={titleStyle}>{movie.title}</div>
-              </div>
-            </Link>
+            <div key={movie.id} style={cardStyle} onClick={() => handleClickPlay(movie.id, 'movie')}>
+              <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} style={imageStyle} />
+              <div style={titleStyle}>{movie.title}</div>
+            </div>
           ))}
         </div>
       </div>
+
+      {iframeSrc && (
+        <>
+          <div style={overlayStyle} onClick={() => setIframeSrc(null)} />
+          <iframe style={iframeStyle} src={iframeSrc} allowFullScreen></iframe>
+        </>
+      )}
     </div>
   );
 }
