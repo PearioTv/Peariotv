@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 export default function Home() {
   const [shows, setShows] = useState([]);
   const [movies, setMovies] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const API_KEY = '9597713c8465b4d0e1eafdcf8db693a2';
@@ -25,6 +28,28 @@ export default function Home() {
 
     fetchData();
   }, []);
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
+
+    try {
+      const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=9597713c8465b4d0e1eafdcf8db693a2&language=ar&query=${encodeURIComponent(searchQuery.trim())}`);
+      const result = await res.json();
+      if (result.results && result.results.length > 0) {
+        const first = result.results.find(item => item.media_type === 'tv' || item.media_type === 'movie');
+        if (first) {
+          router.push(`/details/${first.id}?type=${first.media_type}`);
+        } else {
+          alert("لم يتم العثور على نتيجة صالحة.");
+        }
+      } else {
+        alert("لا توجد نتائج.");
+      }
+    } catch (err) {
+      console.error("فشل في البحث:", err);
+      alert("حدث خطأ أثناء البحث.");
+    }
+  };
 
   const sectionStyle = {
     marginBottom: '3rem'
@@ -58,6 +83,19 @@ export default function Home() {
 
   return (
     <div style={{ backgroundColor: '#0d0d0d', color: '#fff', minHeight: '100vh', padding: '2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginBottom: '2rem' }}>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="ابحث عن فيلم أو مسلسل..."
+          style={{ padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #444', backgroundColor: '#111', color: '#fff', minWidth: '250px' }}
+        />
+        <button onClick={handleSearch} style={{ backgroundColor: '#ff1744', border: 'none', color: 'white', borderRadius: '8px', padding: '0.5rem 1rem' }}>
+          بحث
+        </button>
+      </div>
+
       <div style={sectionStyle}>
         <h2 style={{ color: '#00ffc3', marginBottom: '1rem' }}>📺 المسلسلات الشائعة</h2>
         <div style={gridStyle}>
