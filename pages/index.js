@@ -10,11 +10,19 @@ export default function Home() {
   useEffect(() => {
     fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ar`)
       .then(res => res.json())
-      .then(data => setMovies(data.results || []));
+      .then(data => {
+        console.log('Movies:', data);
+        setMovies(data.results || []);
+      })
+      .catch(err => console.error('Movie fetch error:', err));
 
     fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ar`)
       .then(res => res.json())
-      .then(data => setShows(data.results || []));
+      .then(data => {
+        console.log('TV Shows:', data);
+        setShows(data.results || []);
+      })
+      .catch(err => console.error('TV fetch error:', err));
   }, []);
 
   const sectionStyle = {
