@@ -62,7 +62,7 @@ export default function Home() {
         <h2 style={{ color: '#00ffc3', marginBottom: '1rem' }}>📺 المسلسلات الشائعة</h2>
         <div style={gridStyle}>
           {shows.map(show => (
-            <Link key={show.id} href="#" style={{ textDecoration: 'none' }}>
+            <Link key={show.id} href={`/details/${show.id}?type=tv`} style={{ textDecoration: 'none' }}>
               <div style={cardStyle}>
                 <img src={`https://image.tmdb.org/t/p/w500${show.poster_path}`} alt={show.name} style={imageStyle} />
                 <div style={titleStyle}>{show.name}</div>
@@ -76,7 +76,7 @@ export default function Home() {
         <h2 style={{ color: '#00ffc3', marginBottom: '1rem' }}>🎬 الأفلام الشائعة</h2>
         <div style={gridStyle}>
           {movies.map(movie => (
-            <Link key={movie.id} href="#" style={{ textDecoration: 'none' }}>
+            <Link key={movie.id} href={`/details/${movie.id}?type=movie`} style={{ textDecoration: 'none' }}>
               <div style={cardStyle}>
                 <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} style={imageStyle} />
                 <div style={titleStyle}>{movie.title}</div>
