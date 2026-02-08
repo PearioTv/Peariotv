@@ -52,7 +52,6 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Markdown } from "@/components/Markdown";
 import { cn } from "@/lib/utils";
 import { Loader2, Send, Sparkles } from "lucide-react";
 import { useState, useRef, useEffect, ReactNode } from "react";
@@ -104,7 +103,7 @@ export function isToolComplete(state: ToolInvocationState): boolean {
  */
 export interface ToolPartRendererProps {
   /** The tool part from the message - type is `tool-${toolName}` */
-  part: UIMessagePart & { type: `tool-${string}` };
+  part: UIMessagePart<any, any> & { type: `tool-${string}` };
   /** Extracted tool name for convenience */
   toolName: string;
   /** Current state of the tool invocation */
@@ -244,10 +243,8 @@ function MessageBubble({
               );
             }
             return (
-              <div key={i} className="prose prose-sm dark:prose-invert max-w-none">
-                <Markdown mode={isStreaming ? "typewriter" : "static"} typewriterSpeed={50}>
-                  {part.text}
-                </Markdown>
+              <div key={i} className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
+                {part.text}
               </div>
             );
           }
@@ -256,7 +253,7 @@ function MessageBubble({
           if (part.type.startsWith("tool-")) {
             const toolName = part.type.replace("tool-", "");
             // Cast to access tool-specific properties
-            const toolPart = part as UIMessagePart & {
+            const toolPart = part as UIMessagePart<any, any> & {
               type: `tool-${string}`;
               toolCallId: string;
               state: ToolInvocationState;
@@ -268,10 +265,10 @@ function MessageBubble({
             const rendererProps: ToolPartRendererProps = {
               part: toolPart,
               toolName,
-              state: toolPart.state,
-              input: toolPart.input,
-              output: toolPart.output,
-              errorText: toolPart.errorText,
+              state: toolPart.state as ToolInvocationState,
+              input: (toolPart as any).input,
+              output: (toolPart as any).output,
+              errorText: (toolPart as any).errorText,
             };
 
             // Try custom renderer first, fall back to default
