@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import { Search, Menu, X, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -37,20 +37,23 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between gap-4 py-4">
           {/* Logo */}
-          <Link href="/">
-            <a className="flex items-center gap-2 text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 hover:opacity-80 transition-opacity">
-              🎬 Peario
-            </a>
-          </Link>
+          <button
+            onClick={() => navigate("/")}
+            className="flex items-center gap-2 text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 hover:opacity-80 transition-opacity cursor-pointer border-0 bg-transparent p-0"
+          >
+            🎬 Peario
+          </button>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
             {navItems.map((item) => (
-              <Link key={item.href} href={item.href}>
-                <a className="text-sm font-medium text-slate-300 hover:text-white transition-colors">
-                  {item.label}
-                </a>
-              </Link>
+              <button
+                key={item.href}
+                onClick={() => navigate(item.href)}
+                className="text-sm font-medium text-slate-300 hover:text-white transition-colors cursor-pointer border-0 bg-transparent p-0"
+              >
+                {item.label}
+              </button>
             ))}
           </nav>
 
@@ -66,7 +69,7 @@ export function Header() {
               />
               <button
                 type="submit"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white border-0 bg-transparent p-0"
               >
                 <Search className="h-4 w-4" />
               </button>
@@ -90,11 +93,14 @@ export function Header() {
             {/* User Menu */}
             {user ? (
               <div className="flex items-center gap-2">
-                <Link href="/favorites">
-                  <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white">
-                    {t("favorites", language)}
-                  </Button>
-                </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/favorites")}
+                  className="text-slate-300 hover:text-white"
+                >
+                  {t("favorites", language)}
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -131,11 +137,16 @@ export function Header() {
           <div className="md:hidden border-t border-slate-800 py-4">
             <nav className="flex flex-col gap-3">
               {navItems.map((item) => (
-                <Link key={item.href} href={item.href}>
-                  <a className="text-sm font-medium text-slate-300 hover:text-white transition-colors block py-2">
-                    {item.label}
-                  </a>
-                </Link>
+                <button
+                  key={item.href}
+                  onClick={() => {
+                    navigate(item.href);
+                    setIsMenuOpen(false);
+                  }}
+                  className="text-sm font-medium text-slate-300 hover:text-white transition-colors block py-2 text-left border-0 bg-transparent p-0"
+                >
+                  {item.label}
+                </button>
               ))}
               <form onSubmit={handleSearch} className="mt-3">
                 <div className="relative">
@@ -148,7 +159,7 @@ export function Header() {
                   />
                   <button
                     type="submit"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white border-0 bg-transparent p-0"
                   >
                     <Search className="h-4 w-4" />
                   </button>
